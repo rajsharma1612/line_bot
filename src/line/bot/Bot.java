@@ -25,10 +25,10 @@ public class Bot implements Runnable {
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
 			
-			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,campaign_list);
+			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,"/campaign");
 			System.out.println(original_name);
 			Thread.sleep(1000);
-			changeName(String.valueOf(campaign_id), original_name, true,campaign_list);
+			changeName(String.valueOf(campaign_id), original_name, true,"/campaign");
 			
 			Thread.sleep(1000);
 			getObject("/adgroup", campaign_id);
@@ -63,8 +63,12 @@ public class Bot implements Runnable {
 
 	}
 
-	public String changeName(String id, String name_to_change, boolean isRevert,ArrayList<JSONObject> objects_list) {
-		JSONObject jsonObject = objects_list.get(0);
+	public String changeName(String id, String name_to_change, boolean isRevert,String object_type) {
+		JSONObject jsonObject = null;
+		if(object_type.equals("/campaign")) {
+			jsonObject = campaign_list.get(0);
+		}
+		
 		String original_name = null;
 		try {
 			String old_name = (String) jsonObject.get("name");
