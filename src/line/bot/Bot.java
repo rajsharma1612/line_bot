@@ -23,10 +23,10 @@ public class Bot implements Runnable {
 			int campaign_id = 40151;
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
-			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false);
+			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,campaign_list);
 			System.out.println(original_name);
 			Thread.sleep(1000);
-			changeName(String.valueOf(campaign_id), original_name, true);
+			changeName(String.valueOf(campaign_id), original_name, true,campaign_list);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,7 +38,7 @@ public class Bot implements Runnable {
 		if (objectType.equals("/campaign")) {
 			APIRequest api_request = new APIRequest("/campaigns", "/get");
 			JSONObject jsonObject = api_request.send_post();
-			campaign_list = getPausedObjects(jsonObject, campaign_id);
+			campaign_list = getPausedObjects(jsonObject, objectType, campaign_id);
 			if (campaign_list.size() < 1) {
 				System.out.println("Sorry,Campaign is not PAUSED. Please specify another Campaign ID");
 				System.exit(-1);
@@ -47,8 +47,8 @@ public class Bot implements Runnable {
 
 	}
 
-	public String changeName(String id, String name_to_change, boolean isRevert) {
-		JSONObject jsonObject = campaign_list.get(0);
+	public String changeName(String id, String name_to_change, boolean isRevert,ArrayList<JSONObject> objects_list) {
+		JSONObject jsonObject = objects_list.get(0);
 		String original_name = null;
 		try {
 			String old_name = (String) jsonObject.get("name");
@@ -69,17 +69,27 @@ public class Bot implements Runnable {
 
 	}
 
-	public ArrayList<JSONObject> getPausedObjects(JSONObject jsonObject, int object_id) {
+	public ArrayList<JSONObject> getPausedObjects(JSONObject jsonObject, String object_type, int object_id) {
 		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
 		try {
 			JSONArray jsonArray1 = jsonObject.getJSONArray("operands");
-			for (int i = 0; i < jsonArray1.length(); i++) {
-				JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-				if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(object_id))) {
-					list.add(jsonObject2);
+			if (object_type.equals("/campaign")) {
+				for (int i = 0; i < jsonArray1.length(); i++) {
+					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
+					if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(object_id))) {
+						list.add(jsonObject2);
+					}
 				}
-
+			} else if(object_type.equals("/adgroups")) {
+				for (int i = 0; i < jsonArray1.length(); i++) {
+					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
+					if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("campaignId").equals(object_id))) {
+						list.add(jsonObject2);
+					}
+				}
+				
 			}
+
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
