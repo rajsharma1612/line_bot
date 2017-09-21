@@ -65,13 +65,13 @@ public class Bot implements Runnable {
 
 	}
 
-	public ArrayList<JSONObject> getPausedObjects(JSONObject jsonObject, int campaign_id) {
+	public ArrayList<JSONObject> getPausedObjects(JSONObject jsonObject, int object_id) {
 		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
 		try {
 			JSONArray jsonArray1 = jsonObject.getJSONArray("operands");
 			for (int i = 0; i < jsonArray1.length(); i++) {
 				JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-				if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(campaign_id))) {
+				if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(object_id))) {
 					list.add(jsonObject2);
 				}
 
