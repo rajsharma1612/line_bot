@@ -21,12 +21,18 @@ public class Bot implements Runnable {
 	public void run() {
 		try {
 			int campaign_id = 40151;
+			
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
+			
 			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,campaign_list);
 			System.out.println(original_name);
 			Thread.sleep(1000);
 			changeName(String.valueOf(campaign_id), original_name, true,campaign_list);
+			
+			Thread.sleep(1000);
+			getObject("/adgroup", campaign_id);
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -41,6 +47,16 @@ public class Bot implements Runnable {
 			campaign_list = getPausedObjects(jsonObject, objectType, campaign_id);
 			if (campaign_list.size() < 1) {
 				System.out.println("Sorry,Campaign is not PAUSED. Please specify another Campaign ID");
+				System.exit(-1);
+			}
+		}
+		if (objectType.equals("/adgroup")) {
+			APIRequest api_request = new APIRequest("/adgroups", "/get");
+			JSONObject jsonObject = api_request.send_post();
+			agDroups_list = getPausedObjects(jsonObject, objectType, campaign_id);
+			System.out.println(agDroups_list);
+			if (agDroups_list.size() < 1) {
+				System.out.println("Sorry,No adGroup is PAUSED. Please specify another Campaign ID");
 				System.exit(-1);
 			}
 		}
@@ -80,7 +96,7 @@ public class Bot implements Runnable {
 						list.add(jsonObject2);
 					}
 				}
-			} else if(object_type.equals("/adgroups")) {
+			} else if(object_type.equals("/adgroup")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
 					if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("campaignId").equals(object_id))) {
