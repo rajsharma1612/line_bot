@@ -13,44 +13,55 @@ public class Bot implements Runnable {
 	ArrayList<JSONObject> ads_list = null;
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Bot bot = new Bot();
-		int campaign_id = 40151;
-		bot.getCampaigns(campaign_id);
-		bot.setCampaign();
 
+		new Thread(new Bot()).start();
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void getCampaigns(int campaign_id) {
-		APIRequest api_request = new APIRequest("/campaigns", "/get");
-		JSONObject jsonObject = api_request.send_post();
-		System.out.println("-----ALL Campaigns-----");
-		System.out.println(jsonObject);
-		System.out.println("-----ALL Campaigns-----");
-		campaign_list = getPausedObjects(jsonObject, campaign_id);
-		System.out.println(campaign_list);
-	}
-
-	public void setCampaign() {
-		JSONObject jsonObject = campaign_list.get(0);
 		try {
-			String campaign_name = (String) jsonObject.get("name");
-			System.out.println(campaign_name);
-			// campaign_name = campaign_name + "★";
-			String params[] = {"40151","raj-----"};
-			APIRequest api_request = new APIRequest("/campaigns", "/set",params);
+			int campaign_id = 40151;
+			getObject("/campaign", campaign_id);
+			Thread.sleep(1000);
+			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false);
+			System.out.println(original_name);
+			Thread.sleep(1000);
+			changeName(String.valueOf(campaign_id), original_name, true);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void getObject(String objectType, int campaign_id) {
+		if (objectType.equals("/campaign")) {
+			APIRequest api_request = new APIRequest("/campaigns", "/get");
+			JSONObject jsonObject = api_request.send_post();
+			campaign_list = getPausedObjects(jsonObject, campaign_id);
+		}
+
+	}
+
+	public String changeName(String id, String name_to_change, boolean isRevert) {
+		JSONObject jsonObject = campaign_list.get(0);
+		String original_name = null;
+		try {
+			String old_name = (String) jsonObject.get("name");
+			original_name = old_name;
+			String new_name = old_name + name_to_change;
+			if (isRevert == true) {
+				new_name = name_to_change;
+			}
+			String params[] = { id, new_name };
+			APIRequest api_request = new APIRequest("/campaigns", "/set", params);
 			api_request.send_post();
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return original_name;
 
 	}
 
@@ -74,4 +85,3 @@ public class Bot implements Runnable {
 	}
 
 }
-

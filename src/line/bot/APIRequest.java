@@ -22,14 +22,12 @@ class APIRequest {
 		this.object_type = object_type;
 		this.request_type = request_type;
 	}
-	
+
 	APIRequest(String object_type, String request_type, String params[]) {
 		this.object_type = object_type;
 		this.request_type = request_type;
 		this.params = params;
 	}
-	
-	
 
 	public APIRequest(String string, String string2, String string3, String string4) {
 		// TODO Auto-generated constructor stub
@@ -46,8 +44,10 @@ class APIRequest {
 			if (this.request_type.equals("/get")) {
 				params = new StringEntity("{\"accountId\":\"5514\"}");
 			} else if (this.request_type.equals("/set")) {
-//				params = new StringEntity("{\"accountId\":\"5514\",\"operands\":[{\"id\":40151,\"name\":\"ddddd\"}]}");
-				String output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"name\":\"%s\"}]}", this.params[0], this.params[1]);
+				// params = new
+				// StringEntity("{\"accountId\":\"5514\",\"operands\":[{\"id\":40151,\"name\":\"ddddd\"}]}");
+				String output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"name\":\"%s\"}]}",
+						this.params[0], this.params[1]);
 				params = new StringEntity(output);
 			}
 			request.addHeader("content-type", "application/json");
