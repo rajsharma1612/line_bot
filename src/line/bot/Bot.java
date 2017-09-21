@@ -25,15 +25,25 @@ public class Bot implements Runnable {
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
 			
-			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,"/campaign");
+			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,"/campaign",0);
 			System.out.println(original_name);
 			Thread.sleep(1000);
-			changeName(String.valueOf(campaign_id), original_name, true,"/campaign");
+			changeName(String.valueOf(campaign_id), original_name, true,"/campaign",0);
 			
 			Thread.sleep(1000);
 			getObject("/adgroup", campaign_id);
+			for(int i=0;i<agDroups_list.size();i++) {
+				JSONObject jsonObject = agDroups_list.get(i);
+				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "_BOT", false,"/adgroup",i);
+				System.out.println(original_name1);
+				Thread.sleep(1000);
+				changeName(String.valueOf(jsonObject.get("id")), original_name1, true,"/adgroup",i);
+			}
 			
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -54,7 +64,6 @@ public class Bot implements Runnable {
 			APIRequest api_request = new APIRequest("/adgroups", "/get");
 			JSONObject jsonObject = api_request.send_post();
 			agDroups_list = getPausedObjects(jsonObject, objectType, campaign_id);
-			System.out.println(agDroups_list);
 			if (agDroups_list.size() < 1) {
 				System.out.println("Sorry,No adGroup is PAUSED. Please specify another Campaign ID");
 				System.exit(-1);
@@ -63,10 +72,12 @@ public class Bot implements Runnable {
 
 	}
 
-	public String changeName(String id, String name_to_change, boolean isRevert,String object_type) {
+	public String changeName(String id, String name_to_change, boolean isRevert,String object_type,int adGroupIndex) {
 		JSONObject jsonObject = null;
 		if(object_type.equals("/campaign")) {
 			jsonObject = campaign_list.get(0);
+		}else {
+			jsonObject = agDroups_list.get(adGroupIndex);
 		}
 		
 		String original_name = null;
@@ -78,8 +89,15 @@ public class Bot implements Runnable {
 				new_name = name_to_change;
 			}
 			String params[] = { id, new_name };
-			APIRequest api_request = new APIRequest("/campaigns", "/set", params);
-			api_request.send_post();
+			if(object_type.equals("/campaign")) {
+				APIRequest api_request = new APIRequest("/campaigns", "/set", params);
+				api_request.send_post();
+			}
+			else {
+				APIRequest api_request = new APIRequest("/adgroups", "/set", params);
+				api_request.send_post();
+			}
+			
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
