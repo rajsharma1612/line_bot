@@ -2,19 +2,27 @@ package line.bot;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Bot implements Runnable {
 
+	ArrayList<JSONObject> campaign_list = null;
+	ArrayList<JSONObject> agDroups_list = null;
+	ArrayList<JSONObject> ads_list = null;
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Bot bot = new Bot();
-		bot.getCampaigns();
+		bot.getCampaigns(40151);
 
 	}
 
@@ -24,15 +32,36 @@ public class Bot implements Runnable {
 
 	}
 
-	public void getCampaigns() {
+	public void getCampaigns(int campaign_id) {
 		APIRequest api_request = new APIRequest("/campaigns", "/get");
 		JSONObject jsonObject = api_request.send_post();
 		System.out.println("-----ALL Campaigns-----");
 		System.out.println(jsonObject);
 		System.out.println("-----ALL Campaigns-----");
+		campaign_list = getPausedObjects(jsonObject, campaign_id);
+		System.out.println(campaign_list);
 	}
 
 	public void setCampaign() {
+
+	}
+
+	public ArrayList<JSONObject> getPausedObjects(JSONObject jsonObject, int campaign_id) {
+		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
+		try {
+			JSONArray jsonArray1 = jsonObject.getJSONArray("operands");
+			for (int i = 0; i < jsonArray1.length(); i++) {
+				JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
+				if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(campaign_id))) {
+					list.add(jsonObject2);
+				}
+
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
 
 	}
 
