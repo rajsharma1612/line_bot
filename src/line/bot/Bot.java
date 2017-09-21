@@ -39,6 +39,10 @@ public class Bot implements Runnable {
 			APIRequest api_request = new APIRequest("/campaigns", "/get");
 			JSONObject jsonObject = api_request.send_post();
 			campaign_list = getPausedObjects(jsonObject, campaign_id);
+			if (campaign_list.size() < 1) {
+				System.out.println("Sorry,Campaign is not PAUSED. Please specify another Campaign ID");
+				System.exit(-1);
+			}
 		}
 
 	}
