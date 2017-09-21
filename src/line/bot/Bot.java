@@ -25,7 +25,7 @@ public class Bot implements Runnable {
 	}
 
 	public void getCampaigns() {
-		APIRequest api_request = new APIRequest("/campaigns","/get");
+		APIRequest api_request = new APIRequest("/campaigns", "/get");
 		api_request.send_post();
 	}
 
@@ -35,24 +35,24 @@ public class Bot implements Runnable {
 
 }
 
-class APIRequest<NameValuePair> {
+class APIRequest {
 
 	final String URL = "https://ads.line.me/api/v1.0";
 	final String Access_Token = "1djCb/mXV+KtryMxr6i1bXwJimZGZQho12gbGDoi5Gh/R9mwaw7NuppaB4ONTCf7NpnogdGbG4fvWJwTTMGT+nnysMoFTTDFJWlERwc7OU3EjVg0mB3NEEITwjCLPw8AGb7dghhNEY27vya6vq4b3I9PbdgDzCFqoOLOYbqAITQ=";
 	String object_type = "";
 	String request_type = "";
 
-	 APIRequest(String object_type, String request_type ){
-	 this.object_type = object_type;
-	 this.request_type = request_type;
-	 }
+	APIRequest(String object_type, String request_type) {
+		this.object_type = object_type;
+		this.request_type = request_type;
+	}
 
 	public void send_post() {
-		HttpClient httpClient = HttpClientBuilder.create().build(); // Use this instead
+		HttpClient httpClient = HttpClientBuilder.create().build();
 
 		try {
 
-			HttpPost request = new HttpPost(this.URL + this.object_type+this.request_type);
+			HttpPost request = new HttpPost(this.URL + this.object_type + this.request_type);
 			StringEntity params = new StringEntity("{\"accountId\":\"5514\"} ");
 			request.addHeader("content-type", "application/json");
 			request.addHeader("Authorization", "Bearer " + this.Access_Token);
@@ -73,7 +73,7 @@ class APIRequest<NameValuePair> {
 			ex.printStackTrace();
 
 		} finally {
-	
+
 		}
 
 	}
