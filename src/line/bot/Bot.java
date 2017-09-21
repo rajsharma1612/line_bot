@@ -2,12 +2,12 @@ package line.bot;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONObject;
 
 public class Bot implements Runnable {
 
@@ -26,7 +26,10 @@ public class Bot implements Runnable {
 
 	public void getCampaigns() {
 		APIRequest api_request = new APIRequest("/campaigns", "/get");
-		api_request.send_post();
+		JSONObject jsonObject = api_request.send_post();
+		System.out.println("-----ALL Campaigns-----");
+		System.out.println(jsonObject);
+		System.out.println("-----ALL Campaigns-----");
 	}
 
 	public void setCampaign() {
@@ -47,8 +50,9 @@ class APIRequest {
 		this.request_type = request_type;
 	}
 
-	public void send_post() {
+	public JSONObject send_post() {
 		HttpClient httpClient = HttpClientBuilder.create().build();
+		JSONObject jsonObject = null;
 
 		try {
 
@@ -67,6 +71,7 @@ class APIRequest {
 			}
 
 			System.out.println(result.toString());
+			jsonObject = new JSONObject(result.toString());
 
 		} catch (Exception ex) {
 
@@ -75,6 +80,7 @@ class APIRequest {
 		} finally {
 
 		}
+		return jsonObject;
 
 	}
 
