@@ -22,28 +22,26 @@ public class Bot implements Runnable {
 		try {
 			int campaign_id = 40151;
 			
-			getObject("/campaign", campaign_id);
+//			getObject("/campaign", campaign_id);
+//			Thread.sleep(1000);
+//			
+//			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,"/campaign",0);
+//			System.out.println(original_name);
+//			Thread.sleep(1000);
+//			changeName(String.valueOf(campaign_id), original_name, true,"/campaign",0);
+//			
 			Thread.sleep(1000);
+//			getObject("/adgroup", campaign_id);
+//			for(int i=0;i<agDroups_list.size();i++) {
+//				JSONObject jsonObject = agDroups_list.get(i);
+//				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "_BOT", false,"/adgroup",i);
+//				System.out.println(original_name1);
+//				Thread.sleep(1000);
+//				changeName(String.valueOf(jsonObject.get("id")), original_name1, true,"/adgroup",i);
+//			}
+			getObject("/ads", campaign_id);
 			
-			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,"/campaign",0);
-			System.out.println(original_name);
-			Thread.sleep(1000);
-			changeName(String.valueOf(campaign_id), original_name, true,"/campaign",0);
-			
-			Thread.sleep(1000);
-			getObject("/adgroup", campaign_id);
-			for(int i=0;i<agDroups_list.size();i++) {
-				JSONObject jsonObject = agDroups_list.get(i);
-				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "_BOT", false,"/adgroup",i);
-				System.out.println(original_name1);
-				Thread.sleep(1000);
-				changeName(String.valueOf(jsonObject.get("id")), original_name1, true,"/adgroup",i);
-			}
-			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -68,6 +66,12 @@ public class Bot implements Runnable {
 				System.out.println("Sorry,No adGroup is PAUSED. Please specify another Campaign ID");
 				System.exit(-1);
 			}
+		}
+		if (objectType.equals("/ads")) {
+			APIRequest api_request = new APIRequest("/ads", "/get");
+			JSONObject jsonObject = api_request.send_post();
+			System.out.println("ads");
+			System.out.println(jsonObject);
 		}
 
 	}
