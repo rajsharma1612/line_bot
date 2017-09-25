@@ -70,8 +70,28 @@ public class Bot implements Runnable {
 		if (objectType.equals("/ads")) {
 			APIRequest api_request = new APIRequest("/ads", "/get");
 			JSONObject jsonObject = api_request.send_post();
+			ads_list = getPausedObjects(jsonObject, objectType, 0);
+			for(int i=0;i<ads_list.size();i++) {
+				JSONObject jsonObject2 = ads_list.get(i);
+				try {
+					int ad_id = jsonObject2.getInt("adGroupId");
+					boolean found = false;
+					for(int j=0;j<agDroups_list.size();j++) {
+						JSONObject jsonObject3 = agDroups_list.get(j);
+						int adgroup_id = jsonObject3.getInt("id");
+						if(adgroup_id == ad_id) {
+							found = true;
+						}
+					}
+					if(found ==false) {
+						ads_list.remove(i);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			System.out.println("ads");
-			System.out.println(jsonObject);
 		}
 
 	}
@@ -130,7 +150,16 @@ public class Bot implements Runnable {
 					}
 				}
 				
+			}else if(object_type.equals("/ads")) {
+				for (int i = 0; i < jsonArray1.length(); i++) {
+					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
+					if ((jsonObject2.get("userStatus").equals("PAUSED"))) {
+						list.add(jsonObject2);
+					}
+				}
+				
 			}
+			
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
