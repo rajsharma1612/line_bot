@@ -42,9 +42,9 @@ public class Bot implements Runnable {
 			getObject("/ads", campaign_id);
 			for (int i = 0; i < ads_list.size(); i++) {
 				JSONObject jsonObject = ads_list.get(i);
-				int original_bid = change_bid(jsonObject);
+			    int new_bid = change_bid(jsonObject,jsonObject.getInt("bidAmount"),jsonObject.getInt("bidAmount"),false);
 				Thread.sleep(1000);
-				change_bid(jsonObject);
+				change_bid(jsonObject,jsonObject.getInt("bidAmount"),new_bid,true);
 			}
 
 		} catch (Exception e) {
@@ -54,26 +54,36 @@ public class Bot implements Runnable {
 
 	}
 
-	public int change_bid(JSONObject jsonObject) {
+	public int change_bid(JSONObject jsonObject,int original_bid,int new_bid, boolean revert) {
 		String params[] = new String[2];
-		int original_bid = 0;
+		int new_bids = 0;
 		try {
-			original_bid = jsonObject.getInt("bidAmount");
-			int new_bid = original_bid;
 			int ad_id = jsonObject.getInt("id");
 			params[0] = String.valueOf(ad_id);
-			if (new_bid <= 24) {
-				params[1] = "25";
-			} else {
-				params[1] = String.valueOf(--new_bid);
+			
+			if(original_bid <=24) {
+				if(revert) {
+					new_bids = 24;
+				}else {
+					new_bids = 25;
+				}
+				
 			}
+			else {
+				new_bids = ++original_bid;
+				if(revert) {
+					new_bids = --new_bid;
+				}
+			}
+			params[1] = String.valueOf(new_bids);
+			
 			APIRequest api_request = new APIRequest("/ads", "/set", params);
 			api_request.send_post();
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return original_bid;
+		return new_bids;
 
 	}
 
