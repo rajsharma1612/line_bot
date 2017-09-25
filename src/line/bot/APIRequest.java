@@ -48,7 +48,16 @@ class APIRequest {
 				// StringEntity("{\"accountId\":\"5514\",\"operands\":[{\"id\":40151,\"name\":\"ddddd\"}]}");
 				String output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"name\":\"%s\"}]}",
 						this.params[0], this.params[1]);
-				if(object_type.equals("/ads")) {
+				if (this.params[1].equals("OptimizationOff")) {
+					output = String.format(
+							"{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidOptimizationType\":\"%s\"}]}",
+							this.params[0], "NONE");
+				} else if (this.params[1].equals("OptimizationOn")) {
+					output = String.format(
+							"{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidOptimizationType\":\"%s\",\"bidOptimizationGoal\":\"%s\"}]}",
+							this.params[0], this.params[2], this.params[3]);
+				}
+				if (object_type.equals("/ads")) {
 					output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidAmount\":\"%s\"}]}",
 							this.params[0], this.params[1]);
 				}

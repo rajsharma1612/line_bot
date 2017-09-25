@@ -11,6 +11,9 @@ public class Bot implements Runnable {
 	ArrayList<JSONObject> campaign_list = null;
 	ArrayList<JSONObject> agDroups_list = null;
 	ArrayList<JSONObject> ads_list = null;
+	boolean optimizationEnabled = false;
+	String optimizationType = null;
+	int optimizationValue = 0;
 
 	public static void main(String[] args) {
 
@@ -20,7 +23,7 @@ public class Bot implements Runnable {
 	@Override
 	public void run() {
 		try {
-			int campaign_id = 40387;
+			int campaign_id = 40805;
 
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
@@ -39,12 +42,20 @@ public class Bot implements Runnable {
 				Thread.sleep(1000);
 				changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", i);
 			}
+			// check bidOptimization
+			if (!campaign_list.get(0).getString("bidOptimizationType").equals("NONE")) {
+				changeCampaignOptimization(String.valueOf(campaign_id), false);
+			}
 			getObject("/ads", campaign_id);
 			for (int i = 0; i < ads_list.size(); i++) {
 				JSONObject jsonObject = ads_list.get(i);
-			    int new_bid = change_bid(jsonObject,jsonObject.getInt("bidAmount"),jsonObject.getInt("bidAmount"),false);
+				int new_bid = change_bid(jsonObject, jsonObject.getInt("bidAmount"), jsonObject.getInt("bidAmount"),
+						false);
 				Thread.sleep(1000);
-				change_bid(jsonObject,jsonObject.getInt("bidAmount"),new_bid,true);
+				change_bid(jsonObject, jsonObject.getInt("bidAmount"), new_bid, true);
+			}
+			if (optimizationEnabled) {
+				changeCampaignOptimization(String.valueOf(campaign_id), true);
 			}
 
 		} catch (Exception e) {
@@ -54,29 +65,28 @@ public class Bot implements Runnable {
 
 	}
 
-	public int change_bid(JSONObject jsonObject,int original_bid,int new_bid, boolean revert) {
+	public int change_bid(JSONObject jsonObject, int original_bid, int new_bid, boolean revert) {
 		String params[] = new String[2];
 		int new_bids = 0;
 		try {
 			int ad_id = jsonObject.getInt("id");
 			params[0] = String.valueOf(ad_id);
-			
-			if(original_bid <=24) {
-				if(revert) {
+
+			if (original_bid <= 24) {
+				if (revert) {
 					new_bids = 24;
-				}else {
+				} else {
 					new_bids = 25;
 				}
-				
-			}
-			else {
+
+			} else {
 				new_bids = ++original_bid;
-				if(revert) {
+				if (revert) {
 					new_bids = --new_bid;
 				}
 			}
 			params[1] = String.valueOf(new_bids);
-			
+
 			APIRequest api_request = new APIRequest("/ads", "/set", params);
 			api_request.send_post();
 		} catch (Exception e) {
@@ -84,6 +94,31 @@ public class Bot implements Runnable {
 			e.printStackTrace();
 		}
 		return new_bids;
+
+	}
+
+	public void changeCampaignOptimization(String campaign_id, boolean revert) {
+		try {
+			if (optimizationEnabled && revert) {
+				JSONObject jsonObject = campaign_list.get(0);
+				optimizationType = jsonObject.getString("bidOptimizationType");
+				optimizationValue = jsonObject.getInt("bidOptimizationGoal");
+				String params[] = { campaign_id, "OptimizationOn", optimizationType,
+						String.valueOf(optimizationValue) };
+				APIRequest api_request = new APIRequest("/campaigns", "/set", params);
+				api_request.send_post();
+			} else {
+				JSONObject jsonObject = campaign_list.get(0);
+				optimizationEnabled = true;
+				optimizationType = jsonObject.getString("bidOptimizationType");
+				optimizationValue = jsonObject.getInt("bidOptimizationGoal");
+				String params[] = { campaign_id, "OptimizationOff" };
+				APIRequest api_request = new APIRequest("/campaigns", "/set", params);
+				api_request.send_post();
+			}
+		} catch (Exception e) {
+
+		}
 
 	}
 
