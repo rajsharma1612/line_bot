@@ -48,6 +48,10 @@ class APIRequest {
 				// StringEntity("{\"accountId\":\"5514\",\"operands\":[{\"id\":40151,\"name\":\"ddddd\"}]}");
 				String output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"name\":\"%s\"}]}",
 						this.params[0], this.params[1]);
+				if(object_type.equals("/ads")) {
+					output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidAmount\":\"%s\"}]}",
+							this.params[0], this.params[1]);
+				}
 				params = new StringEntity(output);
 			}
 			request.addHeader("content-type", "application/json");

@@ -21,30 +21,59 @@ public class Bot implements Runnable {
 	public void run() {
 		try {
 			int campaign_id = 40387;
-			
+
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
-			
-			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false,"/campaign",0);
+
+			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false, "/campaign", 0);
 			System.out.println(original_name);
 			Thread.sleep(1000);
-			changeName(String.valueOf(campaign_id), original_name, true,"/campaign",0);
-			
+			changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
+
 			Thread.sleep(1000);
 			getObject("/adgroup", campaign_id);
-			for(int i=0;i<agDroups_list.size();i++) {
+			for (int i = 0; i < agDroups_list.size(); i++) {
 				JSONObject jsonObject = agDroups_list.get(i);
-				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "_BOT", false,"/adgroup",i);
+				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "_BOT", false, "/adgroup", i);
 				System.out.println(original_name1);
 				Thread.sleep(1000);
-				changeName(String.valueOf(jsonObject.get("id")), original_name1, true,"/adgroup",i);
+				changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", i);
 			}
 			getObject("/ads", campaign_id);
-			
+			for (int i = 0; i < ads_list.size(); i++) {
+				JSONObject jsonObject = ads_list.get(i);
+				int original_bid = change_bid(jsonObject);
+				Thread.sleep(1000);
+				change_bid(jsonObject);
+			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	public int change_bid(JSONObject jsonObject) {
+		String params[] = new String[2];
+		int original_bid = 0;
+		try {
+			original_bid = jsonObject.getInt("bidAmount");
+			int new_bid = original_bid;
+			int ad_id = jsonObject.getInt("id");
+			params[0] = String.valueOf(ad_id);
+			if (new_bid <= 24) {
+				params[1] = "25";
+			} else {
+				params[1] = String.valueOf(--new_bid);
+			}
+			APIRequest api_request = new APIRequest("/ads", "/set", params);
+			api_request.send_post();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return original_bid;
 
 	}
 
@@ -71,19 +100,19 @@ public class Bot implements Runnable {
 			APIRequest api_request = new APIRequest("/ads", "/get");
 			JSONObject jsonObject = api_request.send_post();
 			ads_list = getPausedObjects(jsonObject, objectType, 0);
-			for(int i=0;i<ads_list.size();i++) {
+			for (int i = 0; i < ads_list.size(); i++) {
 				JSONObject jsonObject2 = ads_list.get(i);
 				try {
 					int ad_id = jsonObject2.getInt("adGroupId");
 					boolean found = false;
-					for(int j=0;j<agDroups_list.size();j++) {
+					for (int j = 0; j < agDroups_list.size(); j++) {
 						JSONObject jsonObject3 = agDroups_list.get(j);
 						int adgroup_id = jsonObject3.getInt("id");
-						if(adgroup_id == ad_id) {
+						if (adgroup_id == ad_id) {
 							found = true;
 						}
 					}
-					if(found ==false) {
+					if (found == false) {
 						ads_list.remove(i);
 					}
 				} catch (JSONException e) {
@@ -96,14 +125,14 @@ public class Bot implements Runnable {
 
 	}
 
-	public String changeName(String id, String name_to_change, boolean isRevert,String object_type,int adGroupIndex) {
+	public String changeName(String id, String name_to_change, boolean isRevert, String object_type, int adGroupIndex) {
 		JSONObject jsonObject = null;
-		if(object_type.equals("/campaign")) {
+		if (object_type.equals("/campaign")) {
 			jsonObject = campaign_list.get(0);
-		}else {
+		} else {
 			jsonObject = agDroups_list.get(adGroupIndex);
 		}
-		
+
 		String original_name = null;
 		try {
 			String old_name = (String) jsonObject.get("name");
@@ -113,15 +142,13 @@ public class Bot implements Runnable {
 				new_name = name_to_change;
 			}
 			String params[] = { id, new_name };
-			if(object_type.equals("/campaign")) {
+			if (object_type.equals("/campaign")) {
 				APIRequest api_request = new APIRequest("/campaigns", "/set", params);
 				api_request.send_post();
-			}
-			else {
+			} else {
 				APIRequest api_request = new APIRequest("/adgroups", "/set", params);
 				api_request.send_post();
 			}
-			
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -142,24 +169,24 @@ public class Bot implements Runnable {
 						list.add(jsonObject2);
 					}
 				}
-			} else if(object_type.equals("/adgroup")) {
+			} else if (object_type.equals("/adgroup")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-					if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("campaignId").equals(object_id))) {
+					if ((jsonObject2.get("userStatus").equals("PAUSED"))
+							&& (jsonObject2.get("campaignId").equals(object_id))) {
 						list.add(jsonObject2);
 					}
 				}
-				
-			}else if(object_type.equals("/ads")) {
+
+			} else if (object_type.equals("/ads")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
 					if ((jsonObject2.get("userStatus").equals("PAUSED"))) {
 						list.add(jsonObject2);
 					}
 				}
-				
+
 			}
-			
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
