@@ -20,7 +20,7 @@ public class Bot implements Runnable {
 	@Override
 	public void run() {
 		try {
-			int campaign_id = 40151;
+			int campaign_id = 40387;
 			
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
