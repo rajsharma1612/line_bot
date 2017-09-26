@@ -13,7 +13,7 @@ import org.json.JSONObject;
 class APIRequest {
 
 	final String URL = "https://ads.line.me/api/v1.0";
-	final String Access_Token = "1djCb/mXV+KtryMxr6i1bXwJimZGZQho12gbGDoi5Gh/R9mwaw7NuppaB4ONTCf7NpnogdGbG4fvWJwTTMGT+nnysMoFTTDFJWlERwc7OU3EjVg0mB3NEEITwjCLPw8AGb7dghhNEY27vya6vq4b3I9PbdgDzCFqoOLOYbqAITQ=";
+	final String Access_Token = "JnKxiE/4xDSAHElcrwdLYOI/OSW6PDGA42SLsjD6nyqmCL40Qw4IFjPguoKJ5D+INpnogdGbG4fvWJwTTMGT+nnysMoFTTDFJWlERwc7OU0BjyYJACcxOC6eDiP/oKp9BBrPAoPjJYP5c6kpsdYO8o9PbdgDzCFqoOLOYbqAITQ=";
 	String object_type = "";
 	String request_type = "";
 	String params[] = null;

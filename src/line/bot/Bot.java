@@ -23,8 +23,8 @@ public class Bot implements Runnable {
 	@Override
 	public void run() {
 		try {
-			int campaign_id = 40805;
-
+			int campaign_id = 40989;
+			System.out.println("----------Processing Start----------");
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
 
@@ -57,6 +57,7 @@ public class Bot implements Runnable {
 			if (optimizationEnabled) {
 				changeCampaignOptimization(String.valueOf(campaign_id), true);
 			}
+			System.out.println("----------Processing End----------");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
