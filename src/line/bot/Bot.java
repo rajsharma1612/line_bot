@@ -25,16 +25,19 @@ public class Bot implements Runnable {
 		try {
 			int campaign_id = 40989;
 			System.out.println("----------Processing Start----------");
+			
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
-
+			System.out.println("----------Campaign Start----------");
 			String original_name = changeName(String.valueOf(campaign_id), "_BOT", false, "/campaign", 0);
 			System.out.println(original_name);
 			Thread.sleep(1000);
 			changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
+			System.out.println("----------Campaign End----------");
 
 			Thread.sleep(1000);
 			getObject("/adgroup", campaign_id);
+			System.out.println("----------adgroup Start----------");
 			for (int i = 0; i < agDroups_list.size(); i++) {
 				JSONObject jsonObject = agDroups_list.get(i);
 				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "_BOT", false, "/adgroup", i);
@@ -42,11 +45,13 @@ public class Bot implements Runnable {
 				Thread.sleep(1000);
 				changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", i);
 			}
+			System.out.println("----------adgroup End----------");
 			// check bidOptimization
 			if (!campaign_list.get(0).getString("bidOptimizationType").equals("NONE")) {
 				changeCampaignOptimization(String.valueOf(campaign_id), false);
 			}
 			getObject("/ads", campaign_id);
+			System.out.println("----------ads Start----------");
 			for (int i = 0; i < ads_list.size(); i++) {
 				JSONObject jsonObject = ads_list.get(i);
 				int new_bid = change_bid(jsonObject, jsonObject.getInt("bidAmount"), jsonObject.getInt("bidAmount"),
@@ -54,6 +59,7 @@ public class Bot implements Runnable {
 				Thread.sleep(1000);
 				change_bid(jsonObject, jsonObject.getInt("bidAmount"), new_bid, true);
 			}
+			System.out.println("----------ads End----------");
 			if (optimizationEnabled) {
 				changeCampaignOptimization(String.valueOf(campaign_id), true);
 			}
@@ -156,6 +162,9 @@ public class Bot implements Runnable {
 						int adgroup_id = jsonObject3.getInt("id");
 						if (adgroup_id == ad_id) {
 							found = true;
+							break;
+						}else {
+							found = false;
 						}
 					}
 					if (found == false) {
@@ -166,7 +175,6 @@ public class Bot implements Runnable {
 					e.printStackTrace();
 				}
 			}
-			System.out.println("ads");
 		}
 
 	}
