@@ -215,7 +215,7 @@ public class Bot implements Runnable {
 			if (object_type.equals("/campaign")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-					if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(object_id))) {
+					if (jsonObject2.get("id").equals(object_id)) {
 						list.add(jsonObject2);
 					}
 				}
