@@ -60,8 +60,9 @@ class APIRequest {
 					output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidAmount\":\"%s\"}]}",
 							this.params[0], this.params[1]);
 				}
-				params = new StringEntity(output);
+				params = new StringEntity(output,"UTF-8");
 			}
+			params.setContentType("application/json");
 			request.addHeader("content-type", "application/json");
 			request.addHeader("Authorization", "Bearer " + this.Access_Token);
 			request.setEntity(params);
