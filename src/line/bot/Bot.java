@@ -10,7 +10,7 @@ public class Bot implements Runnable {
 
 	ArrayList<JSONObject> campaign_list = null;
 	ArrayList<JSONObject> agDroups_list = null;
-	ArrayList<JSONObject> ads_list = null;
+	ArrayList<JSONObject> ads_list = new ArrayList<JSONObject>();
 	boolean optimizationEnabled = false;
 	String optimizationType = null;
 	int optimizationValue = 0;
@@ -25,7 +25,7 @@ public class Bot implements Runnable {
 		try {
 			int campaign_id = 40989;
 			System.out.println("----------Processing Start----------");
-			
+
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
 			System.out.println("----------Campaign Start----------");
@@ -151,9 +151,9 @@ public class Bot implements Runnable {
 		if (objectType.equals("/ads")) {
 			APIRequest api_request = new APIRequest("/ads", "/get");
 			JSONObject jsonObject = api_request.send_post();
-			ads_list = getPausedObjects(jsonObject, objectType, 0);
-			for (int i = 0; i < ads_list.size(); i++) {
-				JSONObject jsonObject2 = ads_list.get(i);
+			ArrayList<JSONObject> temp_list = getPausedObjects(jsonObject, objectType, 0);
+			for (int i = 0; i < temp_list.size(); i++) {
+				JSONObject jsonObject2 = temp_list.get(i);
 				try {
 					int ad_id = jsonObject2.getInt("adGroupId");
 					boolean found = false;
@@ -162,13 +162,9 @@ public class Bot implements Runnable {
 						int adgroup_id = jsonObject3.getInt("id");
 						if (adgroup_id == ad_id) {
 							found = true;
+							ads_list.add(temp_list.get(i));
 							break;
-						}else {
-							found = false;
 						}
-					}
-					if (found == false) {
-						ads_list.remove(i);
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
