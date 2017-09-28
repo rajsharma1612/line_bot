@@ -29,7 +29,7 @@ public class Bot implements Runnable {
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
 			System.out.println("----------Campaign Start----------");
-			String original_name = changeName(String.valueOf(campaign_id), "*", false, "/campaign", 0);
+			String original_name = changeName(String.valueOf(campaign_id), "★", false, "/campaign", 0);
 			System.out.println(original_name);
 			Thread.sleep(1000);
 			changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
@@ -40,7 +40,7 @@ public class Bot implements Runnable {
 			System.out.println("----------adgroup Start----------");
 			for (int i = 0; i < agDroups_list.size(); i++) {
 				JSONObject jsonObject = agDroups_list.get(i);
-				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "*", false, "/adgroup", i);
+				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "★", false, "/adgroup", i);
 				System.out.println(original_name1);
 				Thread.sleep(1000);
 				changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", i);
@@ -215,7 +215,7 @@ public class Bot implements Runnable {
 			if (object_type.equals("/campaign")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-					if ((jsonObject2.get("userStatus").equals("PAUSED")) && (jsonObject2.get("id").equals(object_id))) {
+					if (jsonObject2.get("id").equals(object_id)) {
 						list.add(jsonObject2);
 					}
 				}
@@ -223,6 +223,7 @@ public class Bot implements Runnable {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
 					if ((jsonObject2.get("userStatus").equals("PAUSED"))
+							&& (jsonObject2.get("campaignId").equals(object_id)) || (jsonObject2.get("userStatus").equals("ACTIVE"))
 							&& (jsonObject2.get("campaignId").equals(object_id))) {
 						list.add(jsonObject2);
 					}
@@ -231,7 +232,7 @@ public class Bot implements Runnable {
 			} else if (object_type.equals("/ads")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-					if ((jsonObject2.get("userStatus").equals("PAUSED"))) {
+					if ((jsonObject2.get("userStatus").equals("PAUSED")) || (jsonObject2.get("userStatus").equals("ACTIVE"))) {
 						list.add(jsonObject2);
 					}
 				}

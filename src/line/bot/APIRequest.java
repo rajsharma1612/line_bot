@@ -44,8 +44,7 @@ class APIRequest {
 			if (this.request_type.equals("/get")) {
 				params = new StringEntity("{\"accountId\":\"5514\"}");
 			} else if (this.request_type.equals("/set")) {
-				// params = new
-				// StringEntity("{\"accountId\":\"5514\",\"operands\":[{\"id\":40151,\"name\":\"ddddd\"}]}");
+
 				String output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"name\":\"%s\"}]}",
 						this.params[0], this.params[1]);
 				if (this.params[1].equals("OptimizationOff")) {
@@ -61,8 +60,9 @@ class APIRequest {
 					output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidAmount\":\"%s\"}]}",
 							this.params[0], this.params[1]);
 				}
-				params = new StringEntity(output);
+				params = new StringEntity(output,"UTF-8");
 			}
+			params.setContentType("application/json");
 			request.addHeader("content-type", "application/json");
 			request.addHeader("Authorization", "Bearer " + this.Access_Token);
 			request.setEntity(params);
