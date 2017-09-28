@@ -23,7 +23,7 @@ public class Bot implements Runnable {
 	@Override
 	public void run() {
 		try {
-			int campaign_id = 40989;
+			int campaign_id = Constants.campaign_id;
 			System.out.println("----------Processing Start----------");
 
 			getObject("/campaign", campaign_id);
@@ -223,8 +223,9 @@ public class Bot implements Runnable {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
 					if ((jsonObject2.get("userStatus").equals("PAUSED"))
-							&& (jsonObject2.get("campaignId").equals(object_id)) || (jsonObject2.get("userStatus").equals("ACTIVE"))
-							&& (jsonObject2.get("campaignId").equals(object_id))) {
+							&& (jsonObject2.get("campaignId").equals(object_id))
+							|| (jsonObject2.get("userStatus").equals("ACTIVE"))
+									&& (jsonObject2.get("campaignId").equals(object_id))) {
 						list.add(jsonObject2);
 					}
 				}
@@ -232,7 +233,8 @@ public class Bot implements Runnable {
 			} else if (object_type.equals("/ads")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-					if ((jsonObject2.get("userStatus").equals("PAUSED")) || (jsonObject2.get("userStatus").equals("ACTIVE"))) {
+					if ((jsonObject2.get("userStatus").equals("PAUSED"))
+							|| (jsonObject2.get("userStatus").equals("ACTIVE"))) {
 						list.add(jsonObject2);
 					}
 				}
