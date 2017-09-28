@@ -29,7 +29,7 @@ public class Bot implements Runnable {
 			getObject("/campaign", campaign_id);
 			Thread.sleep(1000);
 			System.out.println("----------Campaign Start----------");
-			String original_name = changeName(String.valueOf(campaign_id), "*", false, "/campaign", 0);
+			String original_name = changeName(String.valueOf(campaign_id), "★", false, "/campaign", 0);
 			System.out.println(original_name);
 			Thread.sleep(1000);
 			changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
@@ -40,7 +40,7 @@ public class Bot implements Runnable {
 			System.out.println("----------adgroup Start----------");
 			for (int i = 0; i < agDroups_list.size(); i++) {
 				JSONObject jsonObject = agDroups_list.get(i);
-				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "*", false, "/adgroup", i);
+				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "★", false, "/adgroup", i);
 				System.out.println(original_name1);
 				Thread.sleep(1000);
 				changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", i);
