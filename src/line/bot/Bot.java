@@ -23,7 +23,7 @@ public class Bot implements Runnable {
 	@Override
 	public void run() {
 		try {
-			int campaign_id = 40989;
+			int campaign_id = Constants.campaign_id;
 			System.out.println("----------Processing Start----------");
 
 			getObject("/campaign", campaign_id);

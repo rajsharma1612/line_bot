@@ -13,11 +13,11 @@ import org.json.JSONObject;
 class APIRequest {
 
 	final String URL = "https://ads.line.me/api/v1.0";
-	final String Access_Token = "JnKxiE/4xDSAHElcrwdLYOI/OSW6PDGA42SLsjD6nyqmCL40Qw4IFjPguoKJ5D+INpnogdGbG4fvWJwTTMGT+nnysMoFTTDFJWlERwc7OU0BjyYJACcxOC6eDiP/oKp9BBrPAoPjJYP5c6kpsdYO8o9PbdgDzCFqoOLOYbqAITQ=";
+	final String Access_Token = Constants.Access_Token;
 	String object_type = "";
 	String request_type = "";
 	String params[] = null;
-	String ad_Account_Id = "5514";
+	String ad_Account_Id = Constants.ad_Account_Id;
 
 	APIRequest(String object_type, String request_type) {
 		this.object_type = object_type;
