@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONObject;;
 
 public class Bot implements Runnable {
 
@@ -16,13 +16,23 @@ public class Bot implements Runnable {
 	int optimizationValue = 0;
 
 	public static void main(String[] args) {
-
-		new Thread(new Bot()).start();
+		
+		DBManager dbManager = new DBManager();
+		ArrayList<String> accounts_list = dbManager.get_all_adAccounts();
+		System.out.println(accounts_list);
+		for(int i=0;i<accounts_list.size();i++) {
+			String ad_account_id = accounts_list.get(i);
+			System.out.println(ad_account_id);
+			Constants.ad_Account_Id  =ad_account_id;
+			new Thread(new Bot()).start();
+		}
+		
 	}
 
 	@Override
 	public void run() {
 		try {
+
 			int campaign_id = Constants.CPID;
 			System.out.println("----------Processing Start----------");
 
@@ -63,6 +73,7 @@ public class Bot implements Runnable {
 			if (optimizationEnabled) {
 				changeCampaignOptimization(String.valueOf(campaign_id), true);
 			}
+			CsvWriter.write_to_csv();
 			System.out.println("----------Processing End----------");
 
 		} catch (Exception e) {
