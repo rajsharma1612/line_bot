@@ -1,6 +1,8 @@
 package line.bot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,17 +18,17 @@ public class Bot implements Runnable {
 	int optimizationValue = 0;
 
 	public static void main(String[] args) {
-		
+
 		DBManager dbManager = new DBManager();
 		ArrayList<String> accounts_list = dbManager.get_all_adAccounts();
 		System.out.println(accounts_list);
-		for(int i=0;i<accounts_list.size();i++) {
+		for (int i = 0; i < accounts_list.size(); i++) {
 			String ad_account_id = accounts_list.get(i);
 			System.out.println(ad_account_id);
-			Constants.ad_Account_Id  =ad_account_id;
+			Constants.ad_Account_Id = ad_account_id;
 			new Thread(new Bot()).start();
 		}
-		
+
 	}
 
 	@Override
@@ -226,9 +228,23 @@ public class Bot implements Runnable {
 			if (object_type.equals("/campaign")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
 					JSONObject jsonObject2 = (JSONObject) jsonArray1.get(i);
-					if (jsonObject2.get("id").equals(object_id)) {
+					if (!jsonObject2.has("endDate")) {
+						continue;
+					}
+					String campaign_end_ = jsonObject2.getString("endDate");
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+					Date campaign_end_date = sdf.parse(campaign_end_);
+					String data_range[] = Constants.end_date_range.split("/");
+					Date end_date_start = sdf.parse(data_range[0]);
+					Date end_date_end = sdf.parse(data_range[1]);
+					if (campaign_end_date.after(end_date_start) && campaign_end_date.before(end_date_end)
+							&& !jsonObject2.getString("userStatus").equals("REMOVED")) {
+						System.out.println(campaign_end_);
+						System.out.println(data_range[0]);
+						System.out.println(data_range[1]);
 						list.add(jsonObject2);
 					}
+
 				}
 			} else if (object_type.equals("/adgroup")) {
 				for (int i = 0; i < jsonArray1.length(); i++) {
@@ -252,7 +268,7 @@ public class Bot implements Runnable {
 
 			}
 
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
