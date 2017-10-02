@@ -18,64 +18,76 @@ public class Bot implements Runnable {
 	int optimizationValue = 0;
 
 	public static void main(String[] args) {
+		new Thread(new Bot()).start();
+	}
 
-		DBManager dbManager = new DBManager();
-		ArrayList<String> accounts_list = dbManager.get_all_adAccounts();
-		System.out.println(accounts_list);
-		for (int i = 0; i < accounts_list.size(); i++) {
-			String ad_account_id = accounts_list.get(i);
-			System.out.println(ad_account_id);
-			Constants.ad_Account_Id = ad_account_id;
-			new Thread(new Bot()).start();
-		}
-
+	public void getCampaigns() {
+		APIRequest api_request = new APIRequest("/campaigns", "/get");
+		JSONObject jsonObject = api_request.send_post();
+		campaign_list = null;
+		campaign_list = getPausedObjects(jsonObject, "/campaign", 0);
 	}
 
 	@Override
 	public void run() {
 		try {
-
-			int campaign_id = Constants.CPID;
 			System.out.println("----------Processing Start----------");
+			DBManager dbManager = new DBManager();
+			ArrayList<String> accounts_list = dbManager.get_all_adAccounts();
+			System.out.println(accounts_list);
+			for (int i = 0; i < accounts_list.size(); i++) {
+				String ad_account_id = accounts_list.get(i);
+				System.out.println(ad_account_id);
+				Constants.ad_Account_Id = ad_account_id;
+				getCampaigns();
+				System.out.println("----------All Campaigns----------");
+				System.out.println(campaign_list);
+				if(campaign_list.size()<1) {
+					continue;
+				}
+//				System.exit(0);
+				for (int j = 0; j < campaign_list.size(); j++) {
+					int campaign_id = campaign_list.get(j).getInt("id");
+					Constants.CPID = campaign_id;
+					System.out.println("----------Campaign Start----------");
+					String original_name = changeName(String.valueOf(campaign_id), "★", false, "/campaign", 0);
+					System.out.println(original_name);
+					Thread.sleep(1000);
+					changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
+					System.out.println("----------Campaign End----------");
+					Thread.sleep(1000);
+					getObject("/adgroup", campaign_id);
+					System.out.println("----------adgroup Start----------");
+					for (int k = 0; k < agDroups_list.size(); k++) {
+						JSONObject jsonObject = agDroups_list.get(k);
+						String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "★", false, "/adgroup",
+								k);
+						System.out.println(original_name1);
+						Thread.sleep(1000);
+						changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", k);
+					}
+					System.out.println("----------adgroup End----------");
+					// check bidOptimization
+					if (!campaign_list.get(0).getString("bidOptimizationType").equals("NONE")) {
+						changeCampaignOptimization(String.valueOf(campaign_id), false);
+					}
+					getObject("/ads", campaign_id);
+					System.out.println("----------ads Start----------");
+					for (int l = 0; l < ads_list.size(); l++) {
+						JSONObject jsonObject = ads_list.get(l);
+						int new_bid = change_bid(jsonObject, jsonObject.getInt("bidAmount"),
+								jsonObject.getInt("bidAmount"), false);
+						Thread.sleep(1000);
+						change_bid(jsonObject, jsonObject.getInt("bidAmount"), new_bid, true);
+					}
+					System.out.println("----------ads End----------");
+					if (optimizationEnabled) {
+						changeCampaignOptimization(String.valueOf(campaign_id), true);
+					}
+					CsvWriter.write_to_csv();
 
-			getObject("/campaign", campaign_id);
-			Thread.sleep(1000);
-			System.out.println("----------Campaign Start----------");
-			String original_name = changeName(String.valueOf(campaign_id), "★", false, "/campaign", 0);
-			System.out.println(original_name);
-			Thread.sleep(1000);
-			changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
-			System.out.println("----------Campaign End----------");
-
-			Thread.sleep(1000);
-			getObject("/adgroup", campaign_id);
-			System.out.println("----------adgroup Start----------");
-			for (int i = 0; i < agDroups_list.size(); i++) {
-				JSONObject jsonObject = agDroups_list.get(i);
-				String original_name1 = changeName(String.valueOf(jsonObject.get("id")), "★", false, "/adgroup", i);
-				System.out.println(original_name1);
-				Thread.sleep(1000);
-				changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", i);
+				}
 			}
-			System.out.println("----------adgroup End----------");
-			// check bidOptimization
-			if (!campaign_list.get(0).getString("bidOptimizationType").equals("NONE")) {
-				changeCampaignOptimization(String.valueOf(campaign_id), false);
-			}
-			getObject("/ads", campaign_id);
-			System.out.println("----------ads Start----------");
-			for (int i = 0; i < ads_list.size(); i++) {
-				JSONObject jsonObject = ads_list.get(i);
-				int new_bid = change_bid(jsonObject, jsonObject.getInt("bidAmount"), jsonObject.getInt("bidAmount"),
-						false);
-				Thread.sleep(1000);
-				change_bid(jsonObject, jsonObject.getInt("bidAmount"), new_bid, true);
-			}
-			System.out.println("----------ads End----------");
-			if (optimizationEnabled) {
-				changeCampaignOptimization(String.valueOf(campaign_id), true);
-			}
-			CsvWriter.write_to_csv();
 			System.out.println("----------Processing End----------");
 
 		} catch (Exception e) {
@@ -239,9 +251,6 @@ public class Bot implements Runnable {
 					Date end_date_end = sdf.parse(data_range[1]);
 					if (campaign_end_date.after(end_date_start) && campaign_end_date.before(end_date_end)
 							&& !jsonObject2.getString("userStatus").equals("REMOVED")) {
-						System.out.println(campaign_end_);
-						System.out.println(data_range[0]);
-						System.out.println(data_range[1]);
 						list.add(jsonObject2);
 					}
 
