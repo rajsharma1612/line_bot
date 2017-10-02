@@ -24,7 +24,6 @@ public class Bot implements Runnable {
 	public void getCampaigns() {
 		APIRequest api_request = new APIRequest("/campaigns", "/get");
 		JSONObject jsonObject = api_request.send_post();
-		campaign_list = null;
 		campaign_list = getPausedObjects(jsonObject, "/campaign", 0);
 	}
 
@@ -50,7 +49,7 @@ public class Bot implements Runnable {
 					int campaign_id = campaign_list.get(j).getInt("id");
 					Constants.CPID = campaign_id;
 					System.out.println("----------Campaign Start----------");
-					String original_name = changeName(String.valueOf(campaign_id), "★", false, "/campaign", 0);
+					String original_name = changeName(String.valueOf(campaign_id), "★", false, "/campaign", j);
 					System.out.println(original_name);
 					Thread.sleep(1000);
 					changeName(String.valueOf(campaign_id), original_name, true, "/campaign", 0);
@@ -67,8 +66,11 @@ public class Bot implements Runnable {
 						changeName(String.valueOf(jsonObject.get("id")), original_name1, true, "/adgroup", k);
 					}
 					System.out.println("----------adgroup End----------");
+					optimizationEnabled = false;
+					optimizationType = null;
+					optimizationValue = 0;
 					// check bidOptimization
-					if (!campaign_list.get(0).getString("bidOptimizationType").equals("NONE")) {
+					if (!campaign_list.get(j).getString("bidOptimizationType").equals("NONE")) {
 						changeCampaignOptimization(String.valueOf(campaign_id), false);
 					}
 					getObject("/ads", campaign_id);
@@ -85,8 +87,11 @@ public class Bot implements Runnable {
 						changeCampaignOptimization(String.valueOf(campaign_id), true);
 					}
 					CsvWriter.write_to_csv();
+					agDroups_list = null;
+					ads_list.clear();
 
 				}
+				campaign_list = null;
 			}
 			System.out.println("----------Processing End----------");
 
@@ -203,7 +208,7 @@ public class Bot implements Runnable {
 	public String changeName(String id, String name_to_change, boolean isRevert, String object_type, int adGroupIndex) {
 		JSONObject jsonObject = null;
 		if (object_type.equals("/campaign")) {
-			jsonObject = campaign_list.get(0);
+			jsonObject = campaign_list.get(adGroupIndex);
 		} else {
 			jsonObject = agDroups_list.get(adGroupIndex);
 		}
