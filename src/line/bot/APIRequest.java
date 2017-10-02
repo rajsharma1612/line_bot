@@ -59,7 +59,7 @@ class APIRequest {
 							ad_Account_Id, this.params[0], this.params[2], this.params[3]);
 				}
 				if (object_type.equals("/ads")) {
-					output = String.format("{\"accountId\":\"5514\",\"operands\":[{\"id\":%s,\"bidAmount\":\"%s\"}]}",
+					output = String.format("{\"accountId\":\"%s\",\"operands\":[{\"id\":%s,\"bidAmount\":\"%s\"}]}",ad_Account_Id,
 							this.params[0], this.params[1]);
 				}
 				params = new StringEntity(output, "UTF-8");
