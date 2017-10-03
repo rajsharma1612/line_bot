@@ -71,7 +71,7 @@ public class Bot implements Runnable {
 					optimizationValue = 0;
 					// check bidOptimization
 					if (!campaign_list.get(j).getString("bidOptimizationType").equals("NONE")) {
-						changeCampaignOptimization(String.valueOf(campaign_id), false);
+						changeCampaignOptimization(String.valueOf(campaign_id), false,j);
 					}
 					getObject("/ads", campaign_id);
 					System.out.println("----------ads Start----------");
@@ -84,7 +84,7 @@ public class Bot implements Runnable {
 					}
 					System.out.println("----------ads End----------");
 					if (optimizationEnabled) {
-						changeCampaignOptimization(String.valueOf(campaign_id), true);
+						changeCampaignOptimization(String.valueOf(campaign_id), true,j);
 					}
 					CsvWriter.write_to_csv();
 					agDroups_list = null;
@@ -134,10 +134,10 @@ public class Bot implements Runnable {
 
 	}
 
-	public void changeCampaignOptimization(String campaign_id, boolean revert) {
+	public void changeCampaignOptimization(String campaign_id, boolean revert,int index) {
 		try {
 			if (optimizationEnabled && revert) {
-				JSONObject jsonObject = campaign_list.get(0);
+				JSONObject jsonObject = campaign_list.get(index);
 				optimizationType = jsonObject.getString("bidOptimizationType");
 				optimizationValue = jsonObject.getInt("bidOptimizationGoal");
 				String params[] = { campaign_id, "OptimizationOn", optimizationType,
@@ -145,7 +145,7 @@ public class Bot implements Runnable {
 				APIRequest api_request = new APIRequest("/campaigns", "/set", params);
 				api_request.send_post();
 			} else {
-				JSONObject jsonObject = campaign_list.get(0);
+				JSONObject jsonObject = campaign_list.get(index);
 				optimizationEnabled = true;
 				optimizationType = jsonObject.getString("bidOptimizationType");
 				optimizationValue = jsonObject.getInt("bidOptimizationGoal");
